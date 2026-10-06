@@ -1,0 +1,43 @@
+{
+  "name": "@mirrordraw/plugin-sdk",
+  "version": "0.1.0",
+  "description": "Type definitions, test helpers and packaging CLI for MirrorDraw desktop plugins",
+  "type": "module",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./testing": {
+      "types": "./lib/testing.d.ts",
+      "default": "./lib/testing.js"
+    }
+  },
+  "bin": {
+    "mirrordraw-plugin": "./bin/mirrordraw-plugin.mjs"
+  },
+  "files": [
+    "lib",
+    "bin",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "prepublishOnly": "pnpm run build"
+  },
+  "dependencies": {
+    "jszip": "^3.10.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": ["mirrordraw", "plugin", "sdk"],
+  "license": "MIT"
+}

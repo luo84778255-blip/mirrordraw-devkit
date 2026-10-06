@@ -1,0 +1,15 @@
+{
+  "name": "mirrordraw-devkit",
+  "private": true,
+  "description": "MirrorDraw developer kit: MCP server for external agents and SDK for desktop plugins",
+  "license": "MIT",
+  "scripts": {
+    "build": "pnpm --filter @mirrordraw/plugin-sdk build",
+    "typecheck": "pnpm --filter @mirrordraw/plugin-sdk typecheck",
+    "validate:examples": "node packages/plugin-sdk/bin/mirrordraw-plugin.mjs validate examples/sample-plugin-grayscale && node packages/plugin-sdk/bin/mirrordraw-plugin.mjs validate examples/plugin-video-sam2",
+    "check:mcp": "node --check packages/mcp-server/index.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

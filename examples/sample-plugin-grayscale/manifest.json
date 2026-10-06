@@ -1,0 +1,44 @@
+{
+  "manifestVersion": 1,
+  "id": "com.mirrordraw.grayscale",
+  "name": "智能黑白胶片 (官方示例)",
+  "version": "1.0.0",
+  "minAppVersion": "1.80.0",
+  "author": "MirrorDraw",
+  "description": "纯本地计算示例：一键将上游输入的彩色图像转换为黑白复古胶片风格",
+  "runner": "dist/runner.js",
+  "network": {
+    "allow": []
+  },
+  "nodes": [
+    {
+      "type": "grayscaleNode",
+      "title": "黑白胶片滤镜",
+      "category": "图像处理",
+      "defaultSize": { "width": 520, "height": 440 },
+      "inputs": [
+        { "kind": "image", "min": 1, "max": 1 }
+      ],
+      "output": { "kind": "image" },
+      "timeoutSec": 60,
+      "maxConcurrency": 1,
+      "params": [
+        {
+          "key": "contrast",
+          "label": "对比度调节",
+          "type": "slider",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 30
+        },
+        {
+          "key": "invert",
+          "label": "反转色彩",
+          "type": "switch",
+          "default": false
+        }
+      ]
+    }
+  ]
+}

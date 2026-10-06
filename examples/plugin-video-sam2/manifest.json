@@ -1,0 +1,105 @@
+{
+  "manifestVersion": 1,
+  "id": "com.mirrordraw.video-sam2",
+  "name": "视频 SAM2 时序目标分割器",
+  "version": "1.0.0",
+  "minAppVersion": "1.80.0",
+  "author": "MirrorDraw Community",
+  "description": "基于 SAM2 (Segment Anything Model 2) 的视频多帧目标时序分割与追踪。在画面点击提示点标记主体，沿时间轴逐帧追踪并输出处理后的视频（支持前景抠像视频、彩色掩膜追踪视频、二值黑白掩码视频）。",
+  "runner": "dist/runner.js",
+  "network": {
+    "allow": [
+      "http://127.0.0.1",
+      "http://localhost",
+      "https://api.replicate.com"
+    ]
+  },
+  "configSchema": [
+    {
+      "key": "endpoint",
+      "label": "SAM2 服务地址 (可选)",
+      "type": "text",
+      "default": "http://127.0.0.1:8000/sam2"
+    },
+    {
+      "key": "apiKey",
+      "label": "API Key (可选)",
+      "type": "password",
+      "secret": true
+    }
+  ],
+  "nodes": [
+    {
+      "type": "videoSam2SegmentNode",
+      "title": "视频 SAM2 分割",
+      "category": "图像处理",
+      "defaultSize": { "width": 520, "height": 520 },
+      "inputs": [
+        { "kind": "video", "min": 1, "max": 1 }
+      ],
+      "output": { "kind": "video" },
+      "timeoutSec": 180,
+      "maxConcurrency": 1,
+      "params": [
+        {
+          "key": "keyframeTime",
+          "label": "提示帧时间点 (秒)",
+          "type": "number",
+          "min": 0,
+          "max": 3600,
+          "step": 0.1,
+          "default": 0.0
+        },
+        {
+          "key": "segmentMode",
+          "label": "输出视频模式",
+          "type": "select",
+          "options": [
+            { "label": "前景抠像视频 (黑底前景 / Transparent Key)", "value": "foreground" },
+            { "label": "彩色掩膜追踪视频 (Mask Overlay)", "value": "mask-overlay" },
+            { "label": "二值黑白掩码视频 (Binary Mask)", "value": "binary-mask" }
+          ],
+          "default": "foreground"
+        },
+        {
+          "key": "pointPromptX",
+          "label": "提示点位置 X (%)",
+          "type": "slider",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 50
+        },
+        {
+          "key": "pointPromptY",
+          "label": "提示点位置 Y (%)",
+          "type": "slider",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 50
+        },
+        {
+          "key": "maxDuration",
+          "label": "最大处理时长 (秒)",
+          "type": "slider",
+          "min": 1,
+          "max": 30,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "key": "maskColor",
+          "label": "标注掩膜颜色",
+          "type": "select",
+          "options": [
+            { "label": "电光荧光绿 (Neon Green)", "value": "green" },
+            { "label": "赛博青蓝 (Cyan)", "value": "cyan" },
+            { "label": "警示洋红 (Magenta)", "value": "magenta" }
+          ],
+          "default": "green"
+        }
+      ]
+    }
+  ]
+}

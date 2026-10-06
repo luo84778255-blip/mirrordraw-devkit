@@ -1,0 +1,19 @@
+{
+  "name": "mirrordraw-mcp",
+  "version": "1.0.0",
+  "description": "MirrorDraw Canvas MCP Server for external AI agents (Claude Desktop, Cursor, Codex, etc.)",
+  "type": "module",
+  "main": "index.mjs",
+  "bin": {
+    "mirrordraw-mcp": "./index.mjs"
+  },
+  "files": [
+    "index.mjs",
+    "README.md"
+  ],
+  "keywords": ["mcp", "mirrordraw", "canvas", "agent", "ai"],
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT"
+}

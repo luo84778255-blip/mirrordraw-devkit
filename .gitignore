@@ -1,0 +1,6 @@
+node_modules
+packages/plugin-sdk/lib
+*.mdplugin
+.DS_Store
+.env
+.env.*
