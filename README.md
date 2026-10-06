@@ -54,4 +54,4 @@ pnpm run check:mcp         # MCP 服务语法检查
 
 ## 许可证
 
-[MIT](LICENSE)
+[Apache-2.0](LICENSE)

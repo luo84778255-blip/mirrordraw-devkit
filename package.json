@@ -2,7 +2,7 @@
   "name": "mirrordraw-devkit",
   "private": true,
   "description": "MirrorDraw developer kit: MCP server for external agents and SDK for desktop plugins",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "scripts": {
     "build": "pnpm --filter @mirrordraw/plugin-sdk build",
     "test": "pnpm --filter create-mirrordraw-plugin test",
