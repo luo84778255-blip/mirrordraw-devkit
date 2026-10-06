@@ -1,0 +1,22 @@
+{
+  "name": "create-mirrordraw-plugin",
+  "version": "0.1.0",
+  "description": "Scaffold a MirrorDraw desktop plugin project",
+  "type": "module",
+  "bin": {
+    "create-mirrordraw-plugin": "./bin/index.mjs"
+  },
+  "files": [
+    "bin",
+    "lib",
+    "template"
+  ],
+  "scripts": {
+    "test": "node --test test/"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": ["mirrordraw", "plugin", "scaffold", "create"],
+  "license": "MIT"
+}

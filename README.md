@@ -6,6 +6,7 @@ MirrorDraw 桌面客户端的开发者工具包。MirrorDraw is an infinite AI c
 | :--- | :--- |
 | [packages/mcp-server](packages/mcp-server) | MCP 服务 `mirrordraw-mcp`：让 Claude Desktop、Cursor、Codex 等 Agent 操控画布 |
 | [packages/plugin-sdk](packages/plugin-sdk) | 插件 SDK `@mirrordraw/plugin-sdk`：类型定义、本地测试桩、校验与打包命令 |
+| [packages/create-mirrordraw-plugin](packages/create-mirrordraw-plugin) | 脚手架 `create-mirrordraw-plugin`：一条命令生成带 TypeScript、构建、测试的插件项目 |
 | [examples](examples) | 官方示例插件 |
 | [docs](docs) | Agent 接入指南、插件开发指南 |
 
@@ -26,18 +27,21 @@ MirrorDraw 桌面客户端的开发者工具包。MirrorDraw is an infinite AI c
 ## 开发画布插件
 
 ```bash
-cp -r examples/sample-plugin-grayscale my-plugin
-npx @mirrordraw/plugin-sdk validate my-plugin
-npx @mirrordraw/plugin-sdk pack my-plugin -o my-plugin.mdplugin
+npm create mirrordraw-plugin my-plugin
+cd my-plugin && npm install
+npm run build   # src/runner.ts -> dist/runner.js
+npm test        # 用 SDK 测试桩运行
+npm run pack    # 生成 .mdplugin
 ```
 
-在客户端「插件中心」选择「添加本地开发目录」即可联调。完整说明见 [docs/plugin-developer-guide.md](docs/plugin-developer-guide.md)。
+在客户端「插件中心」选择「添加本地开发目录」即可联调。也可以直接复制 `examples/` 里的示例作为起点。完整说明见 [docs/plugin-developer-guide.md](docs/plugin-developer-guide.md)。
 
 ## 本仓库开发
 
 ```bash
 pnpm install
 pnpm run build             # 编译 SDK
+pnpm run test              # 脚手架单元测试
 pnpm run validate:examples # 校验示例插件
 pnpm run check:mcp         # MCP 服务语法检查
 ```

@@ -8,6 +8,8 @@ importers:
 
   .: {}
 
+  packages/create-mirrordraw-plugin: {}
+
   packages/mcp-server: {}
 
   packages/plugin-sdk:

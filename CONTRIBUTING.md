@@ -7,6 +7,7 @@
 | 路径 | 说明 |
 | :--- | :--- |
 | `packages/plugin-sdk/src/{index,runner,testing}.ts`、`packages/plugin-sdk/bin/` | 直接改 |
+| `packages/create-mirrordraw-plugin/` | 直接改。`template/package.json` 中的 SDK 版本要和 `plugin-sdk` 的主版本、次版本保持一致 |
 | `docs/plugin-developer-guide.md`、各 `README.md` | 直接改 |
 | `packages/mcp-server/index.mjs` | 由客户端仓库同步，改动请通过 Issue 描述需求 |
 | `packages/plugin-sdk/src/manifest.ts` | 由客户端类型自动生成，请勿手改 |
@@ -19,6 +20,7 @@ MCP 服务与插件清单契约以客户端实现为准。如果发现文档与�
 ```bash
 pnpm install
 pnpm run build
+pnpm run test
 pnpm run validate:examples
 pnpm run check:mcp
 ```

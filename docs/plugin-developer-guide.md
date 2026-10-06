@@ -11,15 +11,20 @@
 ## 1. 快速开始
 
 ```bash
-# 1. 复制示例作为起点
-cp -r examples/sample-plugin-grayscale my-plugin
+# 1. 生成项目（带 TypeScript、esbuild 构建、测试）
+npm create mirrordraw-plugin my-plugin -- --id com.example.my-plugin --name "我的插件"
+cd my-plugin && npm install
 
-# 2. 修改 manifest.json 中的 id / name / nodes，编写 dist/runner.js
+# 2. 修改 manifest.json 中的节点和参数，编写 src/runner.ts
 
-# 3. 校验并打包
-npx @mirrordraw/plugin-sdk validate my-plugin
-npx @mirrordraw/plugin-sdk pack my-plugin -o my-plugin.mdplugin
+# 3. 构建、测试、校验、打包
+npm run build      # src/runner.ts -> dist/runner.js
+npm test
+npm run validate
+npm run pack       # 生成 my-plugin.mdplugin
 ```
+
+`--id` 和 `--name` 可以省略，默认分别取 `com.example.<目录名>` 和目录名。不想用 TypeScript 时，也可以直接复制 `examples/sample-plugin-grayscale`，用 `npx @mirrordraw/plugin-sdk validate` 和 `pack` 处理。
 
 在客户端侧边栏的「插件中心」：
 
@@ -156,7 +161,7 @@ export default defineRunner({
 });
 ```
 
-TypeScript 源码需要自行用 esbuild / Vite 等打成**单文件 ES Module** 输出到 `dist/runner.js`。示例插件直接提供的是 JavaScript。
+脚手架生成的项目已经配好构建：`npm run build` 用 esbuild 把 `src/runner.ts` 打成**单文件 ES Module** 输出到 `dist/runner.js`。手动搭建时请自行用 esbuild / Vite 达到同样的效果。示例插件直接提供的是 JavaScript。
 
 ### ctx
 

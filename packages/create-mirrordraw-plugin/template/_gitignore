@@ -1,0 +1,4 @@
+node_modules
+dist
+*.mdplugin
+.DS_Store
