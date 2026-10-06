@@ -39,5 +39,12 @@
     "node": ">=20"
   },
   "keywords": ["mirrordraw", "plugin", "sdk"],
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luo84778255-blip/mirrordraw-devkit.git",
+    "directory": "packages/plugin-sdk"
+  },
+  "homepage": "https://github.com/luo84778255-blip/mirrordraw-devkit#readme",
+  "bugs": "https://github.com/luo84778255-blip/mirrordraw-devkit/issues"
 }

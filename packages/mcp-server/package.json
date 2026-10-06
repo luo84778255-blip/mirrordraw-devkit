@@ -15,5 +15,12 @@
   "engines": {
     "node": ">=18"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luo84778255-blip/mirrordraw-devkit.git",
+    "directory": "packages/mcp-server"
+  },
+  "homepage": "https://github.com/luo84778255-blip/mirrordraw-devkit#readme",
+  "bugs": "https://github.com/luo84778255-blip/mirrordraw-devkit/issues"
 }

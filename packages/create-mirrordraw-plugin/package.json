@@ -18,5 +18,12 @@
     "node": ">=20"
   },
   "keywords": ["mirrordraw", "plugin", "scaffold", "create"],
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luo84778255-blip/mirrordraw-devkit.git",
+    "directory": "packages/create-mirrordraw-plugin"
+  },
+  "homepage": "https://github.com/luo84778255-blip/mirrordraw-devkit#readme",
+  "bugs": "https://github.com/luo84778255-blip/mirrordraw-devkit/issues"
 }
