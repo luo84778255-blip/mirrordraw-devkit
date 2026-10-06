@@ -1,6 +1,10 @@
 # MirrorDraw Devkit
 
-MirrorDraw 桌面客户端的开发者工具包。MirrorDraw is an infinite AI canvas; this repo contains what you need to extend it.
+**MirrorDraw 开发者工具包**：MCP 服务、插件 SDK、插件脚手架与示例，用于让 AI Agent 操控 MirrorDraw 无限 AI 画布，并为桌面客户端开发自定义画布节点插件。
+
+**MirrorDraw developer kit**: an MCP server, plugin SDK, plugin scaffolding CLI and examples. Let AI agents (Claude Desktop, Cursor, Codex) control the MirrorDraw infinite AI canvas, and build custom canvas-node plugins for the desktop app.
+
+关键词 / Keywords: MCP, Model Context Protocol, AI agent, infinite canvas, AI 画布, plugin SDK, 插件, Electron, node-based workflow, 节点式工作流, AIGC, Claude, Cursor, Codex
 
 | 目录 | 内容 |
 | :--- | :--- |
