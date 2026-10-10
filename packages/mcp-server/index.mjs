@@ -365,7 +365,7 @@ const NODE_CATALOG = {
     summary: "把剧本拆成集/场/分镜，供下游生图与生视频使用。",
     useWhen: "已有剧本文本，要拆成可执行分镜",
     avoidWhen: "还没写剧本（先建 screenplay）",
-    keyFields: ["title", "splitLlmModel", "splitStageModels", "shotImageModel", "shotVideoModel"],
+    keyFields: ["title", "splitLlmModel", "splitStageModels", "shotImageModel", "shotVideoModel", "shotPromptStyle"],
     upstream: ["screenplay", "text", "script"],
     downstream: ["imageV2", "videoV2"],
     triggerable: true,
@@ -771,6 +771,7 @@ const AGENT_PLAYBOOK = {
     "写操作成功时回执会带落地后的 data / nodeId，不要只看 applied:true。",
     "本地插件扩展：先 canvas_list_plugins 取 pluginId / pluginNodeType 和参数表，再创建 plugin 节点；参数写 p_<key>（如 p_pointPromptX），不要包 params。输出 kind=video 时结果写入 data.videoUrl，image 写 data.imageUrl。",
     "剪辑：先 canvas_open_workbench kind=videoClip，再 canvas_video_clip_run kind=snapshot。addMedia 只用 snapshot.assets 的 mediaId。转场只有 fadeIn/fadeOut（透明度关键帧）。特效只有 blur。没有调色、没有独立转场轨、导出不是 MCP。",
+    "配置本地/私有模型：调用 canvas_configure_model，可直接传调试用的 curl 命令（系统自动智能提取 url、apiKey、modelName 与 payloadSpec），或结构化传入 modelKey、displayName、domain、url、apiKey 等参数；配置后模型加密保存在本地 models.sqlite 中，画布节点设置 data.model=<modelKey> 即可直接调用。",
   ],
   preferred: PREFERRED_NODE_TYPES,
   recipes: [
@@ -861,6 +862,16 @@ const AGENT_PLAYBOOK = {
         "setTrim 用 inSeconds/outSeconds 或 trimStartSeconds/trimEndSeconds；setSpeed rate=0.01-5；setVolume volumeDb=-60..20",
         "字幕用 addSubtitle；转场用 fadeIn/fadeOut（透明度关键帧，不是独立转场轨）；特效用 addEffect effectType=blur",
         "没有 dissolve/wipe，也没有亮度对比度调色。导出仍非 MCP",
+      ],
+    },
+    {
+      id: "configure-model",
+      title: "配置本地或私有 AI 模型",
+      steps: [
+        "获取用户的模型服务信息（curl 调试命令、或者 API 地址、Key、模型名、所属领域 domain）",
+        "调用 canvas_configure_model：若有 curl 直接传 curl 参数（系统自动智能解析 URL、Token、模型名与参数结构）；若为显式参数传 modelKey、displayName、domain、url、apiKey、modelName 等",
+        "调用成功后，使用 canvas_list_models nodeType=<对应节点类型> modelKey=<modelKey> 查验新模型是否生效",
+        "在画布中创建或更新测试节点（如 imageV2 或 text），将 data.model 设为配置成功的 modelKey，并调用 canvas_trigger_node_task 触发测试",
       ],
     },
   ],
@@ -1292,12 +1303,12 @@ const TOOLS = [
   },
   {
     name: "canvas_configure_model",
-    description: "为 MirrorDraw 配置或更新本地/私有 AI 模型。支持直接传入 cURL 命令行自动智能解析，或显式传入 modelKey, url, apiKey 等参数。配置后可在生图、生视频、对话等节点中直接调用该模型，无需平台中转。",
+    description: "为 MirrorDraw 配置或更新本地/私有 AI 模型。支持直接传入 cURL 命令行自动智能解析，或显式传入 modelKey, url, apiKey 等参数。支持再次调用增量修改参数（若 modelKey 已存在，未传入的字段将自动继承保留）。配置后可在生图、生视频、对话等节点中直接调用该模型，无需平台中转。",
     inputSchema: {
       type: "object",
       properties: {
         curl: { type: "string", description: "调试用的 cURL 命令行或 HTTP 请求文本。传入后系统自动解析 URL、Token、模型名、参数映射与输入格式" },
-        modelKey: { type: "string", description: "模型唯一标识（如 local-deepseek-chat 或 local-flux-schnell）。如果不填且提供了 curl，会自动生成" },
+        modelKey: { type: "string", description: "模型唯一标识（如 local-deepseek-chat 或 local-flux-schnell）。如果不填且提供了 curl 会自动生成；若已存在则对该模型增量更新参数" },
         displayName: { type: "string", description: "在画布和模型选择器中展示的名称" },
         domain: { type: "string", description: "模型领域", enum: ["image", "video", "audio", "text", "3d"] },
         inputMode: { type: "string", description: "输入模式，如 text-to-image / image-to-image / chat / text-to-video / image-to-video" },
@@ -1306,7 +1317,10 @@ const TOOLS = [
         modelName: { type: "string", description: "发送给服务端的实际模型名 (如 deepseek-chat 或 flux-schnell)" },
         imageInputMode: { type: "string", description: "图片输入方式（仅图像/视频模型）：url(公网URL，默认) / base64(本地Base64 DataURL，离线可用) / base64_raw(纯Base64字符串)", enum: ["url", "base64", "base64_raw"] },
         enabled: { type: "boolean", description: "是否立即启用模型，默认 true" },
+        defaultParams: { type: "object", description: "可选。该模型的默认请求参数字典（例如 { temperature: 0.7 } 或 { steps: 20 }），直接合并进请求" },
+        payloadSpec: { type: "object", description: "可选。请求体参数映射结构规范" },
       },
+      additionalProperties: true,
     },
   },
   {
@@ -1340,7 +1354,17 @@ const TOOLS = [
         recipeId: {
           type: "string",
           description: "只返回某一条配方。不传则返回完整手册。",
-          enum: ["text-to-image", "image-to-video", "screenplay-to-shots", "reverse-then-generate", "3d-stage", "video-clip"],
+          enum: [
+            "text-to-image",
+            "image-to-video",
+            "video-tail-frame-chain",
+            "screenplay-to-shots",
+            "video-split-max-pipeline",
+            "reverse-then-generate",
+            "3d-stage",
+            "video-clip",
+            "configure-model",
+          ],
         },
       },
     },

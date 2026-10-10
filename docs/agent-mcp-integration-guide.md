@@ -99,7 +99,7 @@ Agent 启动后通过 `tools/list` 自动获取，用户不用手填工具名。
 - 插件节点（`plugin`）：先 `canvas_list_plugins` 取 `pluginId`、`pluginNodeType` 与参数表，不要猜。创建时写 `pluginId`、`pluginNodeType`、`title`。连线固定使用 `input` 与 `output`；参数平铺写 `p_<key>`（如 `p_pointPromptX`、`p_segmentMode`），不要包 `params`（嵌套的 `params` 会被展开为 `p_<key>`）。插件输出 `video` 时结果同时写入 `data.videoUrl`，输出 `image` 时写入 `data.imageUrl`，下游节点按这些字段取素材。
 - 生图比例用 `outputSize`，例如 `2K|16:9`。不要写 `aspect_ratio`。
 - 选模型先 `canvas_list_models`，必须传 `nodeType`。生图写 `data.model` 或 `data.img2imgModel`；视频/音频/3D 写 `data.model`。只写表里的 `modelKey`。生视频写文生视频 key，有参考图时节点会自动切到配对模型。
-- 剧本拆分节点（`scriptSplit`）可配置 `splitLlmModel`（总控语言模型，未填则跟随平台后台绑定）；亦支持高级专家模式 `splitStageModels`（`{ bible?, segments?, shots?, costume?, world?, seam? }` 精细化分阶段配置模型）；分镜生图与生视频模型可分别配置 `shotImageModel` / `shotVideoModel`。`seamFixEnabled=true`（段界接缝「校正 + 尾帧接力」）时，导出会为相邻镜组全链建立尾帧节点并按 `linkPrev` 连线：接续用 `frameRole=firstFrame`，硬切与换场用 `reference`，全链路时序单向依赖保证整组执行严格串行推进。
+- 剧本拆分节点（`scriptSplit`）可配置 `splitLlmModel`（总控语言模型，未填则跟随平台后台绑定）；亦支持高级专家模式 `splitStageModels`（`{ bible?, segments?, shots?, costume?, world?, seam? }` 精细化分阶段配置模型）；分镜生图与生视频模型可分别配置 `shotImageModel` / `shotVideoModel`；提示词排版模式可通过 `shotPromptStyle` 配置（`story_concise` 叙事故事流·简化版，默认；`standard` 标准分镜）。`seamFixEnabled=true`（段界接缝「校正 + 尾帧接力」）时，导出会为相邻镜组全链建立尾帧节点并按 `linkPrev` 连线：接续用 `frameRole=firstFrame`，硬切与换场用 `reference`，全链路时序单向依赖保证整组执行严格串行推进。
 - 尾帧接力：生图节点写 `data.frameCaptureFrom=<视频节点ID>`（落地为 `_frameCapture.fromNodeId`）即成尾帧节点，触发时截取该视频最后一帧，不生图；上游视频换了新结果后尾帧视为过期，`canvas_run_group_nodes mode=resume` 会重截并重跑下游。
 - 模型参数按 `params[].key` 平铺写入 `data`，不要包一层 `params`。有 `options` 时用表里的 `value`。
 - 生图提示词可写 `prompt`，会落到 `img2imgPrompt`。
@@ -109,6 +109,17 @@ Agent 启动后通过 `tools/list` 自动获取，用户不用手填工具名。
 - 批量修改多个节点（统一模型、比例、参数）时，使用 `canvas_batch_update_nodes` 一次性原子更新，不要多次串行调用 `canvas_update_node`。
 - 大画布查找特定节点或按状态排查时，优先使用 `canvas_find_nodes`，避免全量快照消耗大量 Token。
 - 成功回执会带回落地后的 `data`，不要只看 `applied: true`。
+
+配置与接入本地/私有模型：
+
+- 调用 `canvas_configure_model` 为 MirrorDraw 注册本地模型（如 Ollama、ComfyUI、SD WebUI、LM Studio）或私有云 API（如 DeepSeek、SiliconFlow 等）。
+- 最简方式是直接把用户提供的调试 `curl` 命令行字符串传给 `curl` 参数（系统自动智能提取请求 URL、Bearer Token、模型名、所属领域与请求结构）。
+- 亦可结构化传入 `modelKey`、`displayName`、`domain`（`image` / `video` / `audio` / `text` / `3d`）、`url`、`apiKey`、`modelName`、`defaultParams`（默认字典）、`payloadSpec`（参数映射）。
+- **支持再次调用增量修改参数**：如果 `modelKey` 已存在，再次调用 `canvas_configure_model` 只会更新你传入的字段（如只更新 `apiKey` 或 `defaultParams`），原有 `url`、`domain`、`modelName` 等未变更字段会自动安全继承，不会丢失。
+- 模型保存于本地 `models.sqlite` 数据库中，敏感密钥由系统原生 `safeStorage` 加密存储。
+- 配置完成后客户端模型列表实时热更新；在画布节点中将 `data.model`（或 `img2imgModel`）设为该 `modelKey` 即可直连调用。
+- 画布节点使用该模型后，外部 Agent 亦可随时通过 `canvas_update_node` 再次编辑更改节点的提示词、分辨率或模型运行参数。
+- 需要废弃或清除模型时，调用 `canvas_delete_model` 传入 `modelKey`。
 
 看生成图：
 
